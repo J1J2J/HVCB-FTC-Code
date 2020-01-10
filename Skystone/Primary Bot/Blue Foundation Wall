@@ -40,26 +40,27 @@ public class Blue_Foundation_Wall extends LinearOpMode {
    telemetry.update();
    waitForStart();
   if (opModeIsActive()){
+  robot.ssTilt.setPosition(0.65);
 
   // Backward
-   robot.forwardByEncoder(0.25, 4400);
+   forwardByEncoder(0.25, 4400);
    sleep(100);
 
   // Move to Foundation
-   robot.rightByEncoder(0.75, 8000);
+   rightByEncoder(0.75, 8000);
    sleep(100);
    
    // Move to Foundation
-   robot.rightByEncoder(0.2, 600);
+   rightByEncoder(0.2, 600);
    sleep(100);
 
   // Grab Foundation
-   robot.hook0.setPosition(0.43);
-   robot.hook1.setPosition(-0.43);
+   robot.hook0.setPosition(0.4); 
+   robot.hook1.setPosition(-0.8);
    sleep(1750);
 
   // Pull Foundation Away Approx. 9in
-   robot.leftByEncoder(0.5, -4200);
+   leftByEncoder(0.5, -4200);
   
   // Turn Foundation left
    robot.resetAngle();
@@ -80,7 +81,7 @@ public class Blue_Foundation_Wall extends LinearOpMode {
    sleep(1000);
    
    
-   robot.leftByEncoder(0.2 , -1700);
+   leftByEncoder(0.2 , -1700);
    
    //spin left 90
    robot.resetAngle();
@@ -93,11 +94,86 @@ public class Blue_Foundation_Wall extends LinearOpMode {
    robot.stop();
    
   // Move to navigate
-   robot.backwardByEncoder(0.5, -9900);
+   backwardByEncoder(0.5, -9900);
    robot.stop();
    
    
   }
   robot.stop();
  }
+ final int OFF = 0;
+           // Method for encoder BACKWARD mpovement
+     public void backwardByEncoder(double speed, double distance){
+         robot.reset();
+         // while (((-bl.getCurrentPosition() < distance)) && (distance - -bl.getCurrentPosition)){
+         while (((-robot.bl.getCurrentPosition() > distance) && !isStopRequested())){
+         robot.fl.setPower(-speed);
+         robot.fr.setPower(-speed);
+         robot.bl.setPower(-speed);
+         robot.br.setPower(-speed);
+         // -speed was BACKWARD
+        
+         }
+         robot.fl.setPower(OFF);
+         robot.fr.setPower(OFF);
+         robot.bl.setPower(OFF);
+         robot.br.setPower(OFF);
+     }    
+     // Methods 
+    public void forwardByEncoder(double speed, double distance){
+        // while (((-bl.getCurrentPosition() < distance)) && (distance - -bl.getCurrentPosition)){
+        robot.reset();
+        while ((-robot.bl.getCurrentPosition() < distance) && !isStopRequested()){
+        //  fl.setPower(FORWARD);
+        //  fr.setPower(FORWARD);
+        //  bl.setPower(FORWARD);
+        //  br.setPower(FORWARD);
+            robot.fl.setPower(speed);
+            robot.fr.setPower(speed);
+            robot.bl.setPower(speed);
+            robot.br.setPower(speed);
+        }
+         robot.fl.setPower(OFF);
+         robot.fr.setPower(OFF);
+         robot.bl.setPower(OFF);
+         robot.br.setPower(OFF);
+    }  
+    
+    // Method for encoder RIGHT movement
+     public void rightByEncoder(double speed, double distance){
+        robot.reset();
+        while (((robot.fr.getCurrentPosition() < distance) && !isStopRequested())){
+        // Note: +speed was FORWARD, -speed was BACK
+        robot.fl.setPower(speed);
+        robot.fr.setPower(-speed);
+        robot.bl.setPower(-speed);
+        robot.br.setPower(speed);
+        }
+         robot.fl.setPower(OFF);
+         robot.fr.setPower(OFF);
+         robot.bl.setPower(OFF);
+         robot.br.setPower(OFF);
+     }    
+    
+    
+    // Method for encoder LEFT mpovement
+     public void leftByEncoder(double speed, double distance){
+         robot.reset();
+         while (((robot.fr.getCurrentPosition() > distance)) && !isStopRequested()){
+            // Note: +speed was FORWARD, -speed was BACK
+            robot.fl.setPower(-speed);
+            robot.fr.setPower(speed);
+            robot.bl.setPower(speed);
+            robot.br.setPower(-speed);
+        // fl.setPower(-Math.abs(speed));
+        // fr.setPower(Math.abs(speed));
+        // bl.setPower(Math.abs(speed));
+        // br.setPower(-Math.abs(speed)); 
+         }
+         robot.fl.setPower(OFF);
+         robot.fr.setPower(OFF);
+         robot.bl.setPower(OFF);
+         robot.br.setPower(OFF);
+     }
+     
 }
