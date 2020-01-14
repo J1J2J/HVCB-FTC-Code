@@ -1,6 +1,10 @@
 package FTC_2019_2020_Season.Robot.Drivetrain.Odometry;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,6 +12,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.ReadWriteFile;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
@@ -18,30 +25,30 @@ import java.io.File;
  * Odometry system calibration. Run this OpMode to generate the necessary constants to calculate the robot's global position on the field.
  * The Global Positioning Algorithm will not function and will throw an error if this program is not run first
  */
-@TeleOp(name = "Odometry System Calibration", group = "Calibration")
-public class OdometryCalibration extends LinearOpMode {
+ @Disabled
+@TeleOp(name = "Odometry System Calibration Raw", group = "Calibration")
+public class OdometryCalibration_Raw extends LinearOpMode {
     //Drive motors
     DcMotor right_front, right_back, left_front, left_back;
     //Odometry Wheels
     DcMotor verticalLeft, verticalRight, horizontal;
 
     //IMU Sensor
-    BNO055IMU imu0;
+    BNO055IMU imu;
+    Orientation lastAngles = new Orientation();
 
     //Hardware Map Names for drive motors and odometry wheels. THIS WILL CHANGE ON EACH ROBOT, YOU NEED TO UPDATE THESE VALUES ACCORDINGLY
-     String rfName = "fr", rbName = "br", lfName = "fl", lbName = "bl";
-     String verticalLeftEncoderName = rbName, verticalRightEncoderName = lbName, horizontalEncoderName = rfName;
+    /// This is wizard
+    ///String rfName = "rf", rbName = "rb", lfName = "lf", lbName = "lb";
+    //// This is ours
+    String rfName = "fr", rbName = "br", lfName = "fl", lbName = "bl";
+    
+    String verticalLeftEncoderName = rbName, verticalRightEncoderName = lbName, horizontalEncoderName = rfName;
 
-    final double PIVOT_SPEED = 0.2;
-    
-    RobotHardware robot = new RobotHardware(); 
-    // lastAngles = imu0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-    //     globalAngle = 0;
-    
+    final double PIVOT_SPEED = 0.4;
+
     //The amount of encoder ticks for each inch the robot moves. THIS WILL CHANGE FOR EACH ROBOT AND NEEDS TO BE UPDATED HERE
     final double COUNTS_PER_INCH = 307.699557;
-
-    
 
     ElapsedTime timer = new ElapsedTime();
 
@@ -57,7 +64,7 @@ public class OdometryCalibration extends LinearOpMode {
         initHardwareMap(rfName, rbName, lfName, lbName, verticalLeftEncoderName, verticalRightEncoderName, horizontalEncoderName);
 
         //Initialize IMU hardware map value. PLEASE UPDATE THIS VALUE TO MATCH YOUR CONFIGURATION
-        imu0 = hardwareMap.get(BNO055IMU.class, "imu0");
+        imu = hardwareMap.get(BNO055IMU.class, "imu0");
 
         //Initialize IMU parameters
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -67,34 +74,40 @@ public class OdometryCalibration extends LinearOpMode {
         parameters.loggingEnabled      = true;
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        imu0.initialize(parameters);
+        imu.initialize(parameters);
+
+         //lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+
         telemetry.addData("Odometry System Calibration Status", "IMU Init Complete");
         telemetry.clear();
 
         //Odometry System Calibration Init Complete
         telemetry.addData("Odometry System Calibration Status", "Init Complete");
         telemetry.update();
-        robot.init(hardwareMap);
-        
-        telemetry.addData("Mode", "calibrating...");
-        telemetry.update();
-
-        telemetry.addData("Mode", "calibrating2...");
-        telemetry.update();
-
-        while (!isStopRequested() && !robot.imu.isGyroCalibrated())
-        {
-            sleep(50);
-            idle();
-        }
-        robot.resetAngle();
 
         waitForStart();
-        robot.resetAngle();
+
+
+
+        //Thread.sleep(10000);
+
         //Begin calibration (if robot is unable to pivot at these speeds, please adjust the constant at the top of the code
-        //while(opModeIsActive()){
-        robot.rotate(90, 0.25);
-        robot.stop();
+        while(getZAngle() < 90 && opModeIsActive()){/////////// change back to 90
+            right_front.setPower(PIVOT_SPEED);///// swapped
+            right_back.setPower(PIVOT_SPEED);
+            left_front.setPower(-PIVOT_SPEED);
+            left_back.setPower(-PIVOT_SPEED);
+            if(getZAngle() < 60) {///// 1nd one swapped
+                setPowerAll(PIVOT_SPEED, PIVOT_SPEED, -PIVOT_SPEED, -PIVOT_SPEED);
+            }else{///// 1nd one swapped
+                setPowerAll(PIVOT_SPEED/2, PIVOT_SPEED/2, -PIVOT_SPEED/2, -PIVOT_SPEED/2);
+            }
+
+            telemetry.addData("IMU Angle", getZAngle());
+            telemetry.update();
+        }
+
         //Stop the robot
         setPowerAll(0, 0, 0, 0);
         timer.reset();
@@ -104,13 +117,13 @@ public class OdometryCalibration extends LinearOpMode {
         }
 
         //Record IMU and encoder values to calculate the constants for the global position algorithm
-        double angle = getZAngle();
+        double angle = -getZAngle();
 
         /*
         Encoder Difference is calculated by the formula (leftEncoder - rightEncoder)
         Since the left encoder is also mapped to a drive motor, the encoder value needs to be reversed with the negative sign in front
         THIS MAY NEED TO BE CHANGED FOR EACH ROBOT
-      */
+       */
         double encoderDifference = Math.abs(verticalLeft.getCurrentPosition()) + (Math.abs(verticalRight.getCurrentPosition()));
 
         double verticalEncoderTickOffsetPerDegree = encoderDifference/angle;
@@ -190,7 +203,7 @@ public class OdometryCalibration extends LinearOpMode {
      * @return the angle of the robot
      */
     private double getZAngle(){
-        return (-imu0.getAngularOrientation().firstAngle);
+        return (-imu.getAngularOrientation().firstAngle);
     }
 
     /**
@@ -205,7 +218,6 @@ public class OdometryCalibration extends LinearOpMode {
         right_back.setPower(rb);
         left_front.setPower(lf);
         left_back.setPower(lb);
-        
     }
 
 }
