@@ -1,6 +1,7 @@
-package FTC_2019_2020_Season;
+ package FTC_2019_2020_Season;
   
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -19,7 +20,7 @@ import java.util.List;
 
 
 import android.graphics.Color;
-
+@Disabled
 @Autonomous(name = "Odometry Practice", group = "Auto")
 public class Odometry_Practice extends LinearOpMode {
 
@@ -60,7 +61,7 @@ public class Odometry_Practice extends LinearOpMode {
 
 
         if (opModeIsActive()) {
-            robot.forwardByEncoder(0.5, 8000);
+            robot.forwardByEncoder(0.5, 9000);
             robot.stop();
             sleep(100);
         // while(opModeIsActive()){
@@ -70,19 +71,22 @@ public class Odometry_Practice extends LinearOpMode {
         
         
         
-         robot.rightByEncoder(0.5, 5000);
+        //  robot.rightByEncoder(0.5, 9000);
+        //     robot.stop();
+        //     sleep(100);
+            
+        robot.backwardByEncoder(0.5, -3000);
             robot.stop();
             sleep(100);
             
-        robot.backwardByEncoder(0.5, 0);
-            robot.stop();
-            sleep(100);
-            
-        robot.leftByEncoder(0.5, 0);
-            robot.stop();
-            sleep(100);
+        // robot.leftByEncoder(0.5, -3000);
+        //     robot.stop();
+        //     sleep(100);
         
         
         }
     }
 }
+
+
+
