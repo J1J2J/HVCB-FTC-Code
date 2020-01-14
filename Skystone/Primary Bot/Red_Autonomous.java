@@ -1,6 +1,7 @@
 package FTC_2019_2020_Season;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -24,7 +25,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import java.util.Locale;
-
+@Disabled
 @Autonomous(name="Red Autonomus", group="Auto")
 public class Red_Autonomus extends LinearOpMode {
  
@@ -42,6 +43,10 @@ public class Red_Autonomus extends LinearOpMode {
  
      @Override
      public void runOpMode() {
+      
+      
+       
+      
       
      /*
      * Initialize the drive system variables.
@@ -91,7 +96,7 @@ public class Red_Autonomus extends LinearOpMode {
      // Wait for the game to start (driver presses PLAY)
         /** Wait for the game to begin */
         telemetry.addData(">", "Press Play to start tracking");
-        telemetry.addData("imu calib status", robot.imu.getCalibrationStatus().toString());
+        telemetry.addData("imu0 calib status", robot.imu.getCalibrationStatus().toString());
         telemetry.update();
         waitForStart();
         robot.resetAngle();
@@ -113,8 +118,9 @@ public class Red_Autonomus extends LinearOpMode {
             ////////////////////////////////////////////////////////////
              robot.backward();
              runtime.reset();
-             while(opModeIsActive() && (runtime.seconds() <= .001)){
-             } robot.stop();
+             while(opModeIsActive() && (runtime.seconds() <= .001)){ // sleep 
+             } 
+             robot.stop();
               
               sleep(500);
              
@@ -717,18 +723,11 @@ public class Red_Autonomus extends LinearOpMode {
           }
             
  
-                  
- 
-}
-             robot.stop();
-            }
-             
-            }
-             
-            
-            
-      
-     
+      }
  
 
     
+            }
+            
+             
+            }
