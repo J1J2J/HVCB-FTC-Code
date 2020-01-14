@@ -1,0 +1,66 @@
+
+  package FTC_2019_2020_Season;
+  
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import java.util.List;
+
+
+import android.graphics.Color;
+@Disabled
+@Autonomous(name = "Odometry Mapping", group = "Auto")
+public class Odometry_Mapping extends LinearOpMode {
+
+
+    /* Declare OpMode members. */
+    RobotHardware robot = new RobotHardware();
+    private ElapsedTime runtime = new ElapsedTime();
+
+
+
+    @Override
+    public void runOpMode() {
+
+        /*
+         * Initialize the drive system variables.
+         * The init() method of the hardware class does all the work here
+         */
+        robot.init(hardwareMap);
+
+   
+     
+
+        // Wait for the game to start (driver presses PLAY)
+        /** Wait for the game to begin */
+        telemetry.addData(">", "Press Play to start tracking");
+        telemetry.update();
+        waitForStart();
+
+
+
+        
+        while(opModeIsActive()){
+            telemetry.addData("RIGHT Y Encoder Position ", robot.bl.getCurrentPosition());
+            telemetry.addData("LEFT Y Encoder Position ", robot.br.getCurrentPosition());
+            telemetry.addData("BACK X Encoder Position ", robot.fr.getCurrentPosition());
+            telemetry.update();
+            }
+            
+    
+    }
+}
